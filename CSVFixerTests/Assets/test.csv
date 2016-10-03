@@ -1,0 +1,7 @@
+"Participant id","Technique","Granularity","Trial no","Stimuli","User Response","Trial Start Time","Trial End Time","Trial Time","Accuracy"
+"P01","AUTOCOMPASTE","sentence","1","What is acceptor atoms?","What is acceptor atoms?","1472987448228","1472987486911","38683","1"
+"P01","AUTOCOMPASTE","paragraph","2","What is AC coupling? Circuit that passes an AC signal while blocking a DC voltage.","What is AC coupling? Circuit that passes an AC signal while blocking a DC voltage.","1472987486911","1472987502944","16033","1"
+"P01","AUTOCOMPASTE","phrase","3","number of positive charges","The number of positive charges or protons in the nucleus of an atom.","1472987502944","1472987512707","9763","0"
+"P01","TRADITIONAL","sentence","4","What is acceptor atoms?","What is acceptor atoms?","1472987512707","1472987542665","29958","1"
+"P01","TRADITIONAL","paragraph","5","What is AC coupling? Circuit that passes an AC signal while blocking a DC voltage.","What is AC coupling? Circuit that passes an AC signal while blocking a DC voltage.","1472987542665","1472987554491","11826","1"
+"P01","TRADITIONAL","phrase","6","number of positive charges","number of positive charges","1472987554491","1472987582235","27744","1"
