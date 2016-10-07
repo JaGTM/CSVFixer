@@ -85,6 +85,7 @@ namespace CSVFixer
             bool inQuote = false;
             StringBuilder build = new StringBuilder(line.Length);
             bool prevIsQuote = false;
+            int quoteCount = 0;
             StringBuilder block = new StringBuilder();
             bool hasAComma = false;
 
@@ -108,6 +109,8 @@ namespace CSVFixer
 
                             inQuote = false;    // No longer in quote as there was something in between.
                             block.Clear();
+                            prevIsQuote = false;
+                            quoteCount = 0;
                             hasAComma = false;
                         }
                     }
@@ -129,16 +132,46 @@ namespace CSVFixer
                 {
                     if (inQuote)
                     {
+                        var appendChar = true;
                         if (line[pointer] == ',')
+                        {
                             hasAComma = true;   // Found at least 1 comma in this block
 
-                        block.Append(line[pointer]);
+                            // Do edge case check for empty value
+                            if (block.Length <= 0 && quoteCount % 2 == 0)
+                            {   // An empty value is determined by number of quotes encountered is even (all quotes are closed and the current value length = 0.
+                                appendChar = false; // Not adding to current block
+                                build.Append(',');  // Add to line
+                                // Clear and start new block
+                                block.Clear();
+                                inQuote = false;
+                                prevIsQuote = false;
+                                quoteCount = 0;
+                                hasAComma = false;
+                            }
+                        }
+
+                        if (appendChar)
+                            block.Append(line[pointer]);
                     }
                     else
+                    {
                         build.Append(line[pointer]);
+
+                        // Handle end of value.
+                        if (line[pointer] == ',')
+                        {
+                            hasAComma = false;
+                            quoteCount = 0;
+                            prevIsQuote = false;
+                        }
+                    }
                 }
 
                 prevIsQuote = line[pointer] == '"'; // Setup for next pointer
+                if (line[pointer] == '"')
+                    quoteCount++;
+
                 pointer++;  // Move to the next character
             }
 

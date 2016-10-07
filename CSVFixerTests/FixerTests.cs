@@ -45,7 +45,7 @@ namespace CSVFixerTests
         {
             var expected = @"p01,AUTOCOMPASTE,sentence,3,9,What is AC generator? Device used to transform mechanical energy into AC electrical power.,What is AC generator? Device used to transform mechanical energy into AC electrical power.,1474940000035,1474940008083,8048,1";
             var line = @"""p01"",""AUTOCOMPASTE"",""sentence"",""3"",""9"",""What is AC generator? Device used to transform mechanical energy into AC electrical power."",""What is AC generator? Device used to transform mechanical energy into AC electrical power."",""1474940000035"",""1474940008083"",""8048"",""1""";
-            
+
             var fixedLine = this.fixer.TryFixLine(line);
 
             Assert.AreEqual(expected, fixedLine);
@@ -60,6 +60,66 @@ namespace CSVFixerTests
             var fixedLine = this.fixer.TryFixLine(line);
 
             Assert.AreEqual(expected, fixedLine);
+        }
+
+        [TestMethod]
+        public void TestEmptyLine()
+        {
+            var lines = new string[]
+            {
+                "\"\"\"p04\"\"\",\"\"\"AUTOCOMPASTE\"\"\",\"\"\"paragraph\"\"\",\"\"\"6\"\"\",\"\"\"35\"\"\",\"\"\"What is alligator clip? Spring clip on the end of a test lead used to make a temporary connection.\"\"\",\"\"\"\"\"\",\"\"\"1474939776492\"\"\",\"\"\"1474939776682\"\"\",\"\"\"190\"\"\",\"\"\"0\"\"\"",
+                "\"\"\"p04\"\"\",\"\"\"AUTOCOMPASTE\"\"\",\"\"\"paragraph\"\"\",\"\"\"6\"\"\",\"\"\"36\"\"\",\"\"\"What is AC/DC? Equipment that will operate on either an AC or DC power source.\"\"\",\"\"\"What is AC/DC? Equipment that will operate on either an AC or DC power source.\"\"\",\"\"\"1474939776682\"\"\",\"\"\"1474939789467\"\"\",\"\"\"12785\"\"\",\"\"\"1\"\"\""
+            };
+
+            var fullString = lines.Select(x => this.fixer.TryFixLine(x)).Aggregate((x1, x2) => x1 + "\n" + x2);
+
+            var expectedLine = "p04,AUTOCOMPASTE,paragraph,6,35,What is alligator clip? Spring clip on the end of a test lead used to make a temporary connection.,,1474939776492,1474939776682,190,0\np04,AUTOCOMPASTE,paragraph,6,36,What is AC/DC? Equipment that will operate on either an AC or DC power source.,What is AC/DC? Equipment that will operate on either an AC or DC power source.,1474939776682,1474939789467,12785,1";
+            Assert.AreEqual(expectedLine, fullString);
+        }
+
+        [TestMethod]
+        public void TestStartEmptyLine()
+        {
+            var lines = new string[]
+            {
+                "\"\"\"\"\"\",\"\"\"AUTOCOMPASTE\"\"\",\"\"\"paragraph\"\"\",\"\"\"6\"\"\",\"\"\"35\"\"\",\"\"\"What is alligator clip? Spring clip on the end of a test lead used to make a temporary connection.\"\"\",\"\"\"abc\"\"\",\"\"\"1474939776492\"\"\",\"\"\"1474939776682\"\"\",\"\"\"190\"\"\",\"\"\"0\"\"\"",
+                "\"\"\"p04\"\"\",\"\"\"AUTOCOMPASTE\"\"\",\"\"\"paragraph\"\"\",\"\"\"6\"\"\",\"\"\"36\"\"\",\"\"\"What is AC/DC? Equipment that will operate on either an AC or DC power source.\"\"\",\"\"\"What is AC/DC? Equipment that will operate on either an AC or DC power source.\"\"\",\"\"\"1474939776682\"\"\",\"\"\"1474939789467\"\"\",\"\"\"12785\"\"\",\"\"\"1\"\"\""
+            };
+
+            var fullString = lines.Select(x => this.fixer.TryFixLine(x)).Aggregate((x1, x2) => x1 + "\n" + x2);
+
+            var expectedLine = ",AUTOCOMPASTE,paragraph,6,35,What is alligator clip? Spring clip on the end of a test lead used to make a temporary connection.,abc,1474939776492,1474939776682,190,0\np04,AUTOCOMPASTE,paragraph,6,36,What is AC/DC? Equipment that will operate on either an AC or DC power source.,What is AC/DC? Equipment that will operate on either an AC or DC power source.,1474939776682,1474939789467,12785,1";
+            Assert.AreEqual(expectedLine, fullString);
+        }
+
+        [TestMethod]
+        public void TestEndEmptyLine()
+        {
+            var lines = new string[]
+            {
+                "\"\"\"p04\"\"\",\"\"\"AUTOCOMPASTE\"\"\",\"\"\"paragraph\"\"\",\"\"\"6\"\"\",\"\"\"35\"\"\",\"\"\"What is alligator clip? Spring clip on the end of a test lead used to make a temporary connection.\"\"\",\"\"\"abc\"\"\",\"\"\"1474939776492\"\"\",\"\"\"1474939776682\"\"\",\"\"\"190\"\"\",\"\"\"\"\"\"",
+                "\"\"\"p04\"\"\",\"\"\"AUTOCOMPASTE\"\"\",\"\"\"paragraph\"\"\",\"\"\"6\"\"\",\"\"\"36\"\"\",\"\"\"What is AC/DC? Equipment that will operate on either an AC or DC power source.\"\"\",\"\"\"What is AC/DC? Equipment that will operate on either an AC or DC power source.\"\"\",\"\"\"1474939776682\"\"\",\"\"\"1474939789467\"\"\",\"\"\"12785\"\"\",\"\"\"1\"\"\""
+            };
+
+            var fullString = lines.Select(x => this.fixer.TryFixLine(x)).Aggregate((x1, x2) => x1 + "\n" + x2);
+
+            var expectedLine = "p04,AUTOCOMPASTE,paragraph,6,35,What is alligator clip? Spring clip on the end of a test lead used to make a temporary connection.,abc,1474939776492,1474939776682,190,\np04,AUTOCOMPASTE,paragraph,6,36,What is AC/DC? Equipment that will operate on either an AC or DC power source.,What is AC/DC? Equipment that will operate on either an AC or DC power source.,1474939776682,1474939789467,12785,1";
+            Assert.AreEqual(expectedLine, fullString);
+        }
+
+        [TestMethod]
+        public void TestStartAndEndEmptyLine()
+        {
+            var lines = new string[]
+            {
+                "\"\"\"\"\"\",\"\"\"AUTOCOMPASTE\"\"\",\"\"\"paragraph\"\"\",\"\"\"6\"\"\",\"\"\"35\"\"\",\"\"\"What is alligator clip? Spring clip on the end of a test lead used to make a temporary connection.\"\"\",\"\"\"abc\"\"\",\"\"\"1474939776492\"\"\",\"\"\"1474939776682\"\"\",\"\"\"190\"\"\",\"\"\"\"\"\"",
+                "\"\"\"p04\"\"\",\"\"\"AUTOCOMPASTE\"\"\",\"\"\"paragraph\"\"\",\"\"\"6\"\"\",\"\"\"36\"\"\",\"\"\"What is AC/DC? Equipment that will operate on either an AC or DC power source.\"\"\",\"\"\"What is AC/DC? Equipment that will operate on either an AC or DC power source.\"\"\",\"\"\"1474939776682\"\"\",\"\"\"1474939789467\"\"\",\"\"\"12785\"\"\",\"\"\"1\"\"\""
+            };
+
+            var fullString = lines.Select(x => this.fixer.TryFixLine(x)).Aggregate((x1, x2) => x1 + "\n" + x2);
+
+            var expectedLine = ",AUTOCOMPASTE,paragraph,6,35,What is alligator clip? Spring clip on the end of a test lead used to make a temporary connection.,abc,1474939776492,1474939776682,190,\np04,AUTOCOMPASTE,paragraph,6,36,What is AC/DC? Equipment that will operate on either an AC or DC power source.,What is AC/DC? Equipment that will operate on either an AC or DC power source.,1474939776682,1474939789467,12785,1";
+            Assert.AreEqual(expectedLine, fullString);
         }
     }
 }
